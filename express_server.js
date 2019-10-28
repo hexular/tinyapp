@@ -66,9 +66,9 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.render('urls_index', templateVars);
 });
 
-app.post('/:shortURL/edit', function(req, res) {
-  urlDatabase[req.params.shortURL] = req.body.name;
-  res.redirect(`/urls/${req.params.shortURL}`);
+app.post('/:id', function(req, res) {
+  urlDatabase[req.params.id] = req.body.name;
+  res.redirect(`/urls`);
 });
 
 app.listen(PORT, () => {

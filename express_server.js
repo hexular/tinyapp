@@ -8,14 +8,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
-const generateRandomString = () => {
-  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += chars[(Math.floor(Math.random() * chars.length))];
-  }
-  return result;
-};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -28,12 +20,30 @@ const users = {
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
+  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
 };
+
+const generateRandomString = () => {
+  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars[(Math.floor(Math.random() * chars.length))];
+  }
+  return result;
+};
+
+const duplicateLookup = (key, value, registry) => {
+  for (let user in registry) {
+    if (registry[user][key] === value) return true;
+  } 
+  return false;
+};
+
+// console.log(emailLookup("email", 'user2@example.com', users));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -85,6 +95,14 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const newUser = generateRandomString();
   // console.log(req.body.email, newUser)
+  if (req.body.email.length === 0 || req.body.password.length === 0) {
+    res.status(400);
+    res.send("Fields cannot be empty");
+  }
+  if (duplicateLookup("email", req.body.email, users)) {
+    res.status(400);
+    res.send("That email is already in use. Please use another email address.");
+  }
   users[newUser] = {
     id: newUser,
     email: req.body.email,

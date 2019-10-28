@@ -56,8 +56,14 @@ app.post("/urls", (req, res) => {
   let newURL = generateRandomString();
   if (urlDatabase[newURL]) newURL = generateRandomString();
   urlDatabase[newURL] = 'http://' + req.body.longURL;
-  let templateVars = {shortURL: newURL, longURL: 'http://' + req.body.longURL };
-  res.render('urls_show', templateVars);
+  res.redirect(`/urls/${newURL}`);
+});
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  delete urlDatabase[req.params.shortURL];
+  console.log(urlDatabase);
+  res.render('urls_index', templateVars);
 });
 
 app.listen(PORT, () => {

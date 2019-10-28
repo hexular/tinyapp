@@ -22,6 +22,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -65,17 +78,34 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newURL}`);
 });
 
+app.get('/register', (req, res) => {
+  res.render('register', { username: req.cookies["username"] });
+});
+
+app.post('/register', (req, res) => {
+  const newUser = generateRandomString();
+  // console.log(req.body.email, newUser)
+  users[newUser] = {
+    id: newUser,
+    email: req.body.email,
+    password: req.body.password
+  };
+  console.log(users);
+  const cookie = res.cookie('username', newUser);
+  res.redirect('/urls');
+});
+
 app.post('/urls/:shortURL/delete', (req, res) => {
   let templateVars = { username: req.cookies["username"], urls: urlDatabase };
   delete urlDatabase[req.params.shortURL];
-  console.log(urlDatabase);
+  // console.log(urlDatabase);
   res.render('urls_index', templateVars);
 });
 
 app.post('/login', (req, res) => {
   const cookie = res.cookie('username', req.body.username);
   // console.log(cookie.body);
-  console.log(req.body.username);
+  // console.log(req.body.username);
   res.redirect('/urls');
 });
 
@@ -83,6 +113,7 @@ app.post('/:id', (req, res) => {
   urlDatabase[req.params.id] = req.body.name;
   res.redirect(`/urls`);
 });
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

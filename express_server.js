@@ -14,8 +14,8 @@ app.get("/", (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = { url: urlDatabase };
-  res.send(templateVars);
+  let templateVars = { urls: urlDatabase };
+  res.render('urls_index', templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {

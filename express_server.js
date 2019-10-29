@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const { infoLookup } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -38,13 +39,6 @@ const generateRandomString = () => {
     result += chars[(Math.floor(Math.random() * chars.length))];
   }
   return result;
-};
-
-const infoLookup = (key, value, registry) => {
-  for (let user in registry) {
-    if (registry[user][key] === value) return true;
-  } 
-  return false;
 };
 
 const urlsForUser = (id) => {

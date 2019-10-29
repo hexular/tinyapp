@@ -92,6 +92,11 @@ app.post('/login', (req, res) => {
   }
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const website = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(website);
+});
+
 app.get("/urls/:shortURL", (req, res) => {
   let username = req.session.user_id
   if (username !== urlDatabase[req.params.shortURL].userID) {

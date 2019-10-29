@@ -12,9 +12,9 @@
   <% include ./partials/_header.ejs %>
   <main style="margin: 1em;">
     <% if (Object.keys(result).length === 0 && username === undefined) { %>
-      <p>Please log in to create and view URLs</p>
+      <p>Please <a href="/login">log in</a> to create and view URLs</p>
     <% } else if (Object.keys(result).length === 0 && username !== undefined) { %>
-      <p>You currently have no URLs! Start by creating a new URL</p>
+      <p>You currently have no URLs! Start by <a href="/urls/new">creating</a> a new URL</p>
     <% } else { %>
       <h3>My URLs</h3>
       <table class="table">

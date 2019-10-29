@@ -157,7 +157,6 @@ app.get('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   let templateVars = { username: req.cookies["user_id"], urls: urlDatabase, result: urlsForUser(req.cookies['user_id']) };
-  // console.log(username)
   if (templateVars.username === undefined) {
     res.status(403);
     res.send("lol")
@@ -173,7 +172,6 @@ app.get('/login', (req, res) => {
 
 app.post('/:id', (req, res) => {
   let username = req.cookies["user_id"]
-  // console.log(username)
   if (username === undefined) {
     res.status(400);
     res.send("Nice try hackermans")

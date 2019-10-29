@@ -156,10 +156,10 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let templateVars = { username: req.session.user_id, urls: urlDatabase, result: urlsForUser(req.session.user_id) };
   if (templateVars.username === undefined) {
     res.status(403);
-    res.send("lol")
+    res.send("I'm afraid I can't let you do that");
   } else {
     delete urlDatabase[req.params.shortURL];
-    res.render('urls_index', templateVars);
+    Object.keys(urlDatabase).length === 0 ? res.redirect('/urls') : res.render('urls_index', templateVars);
   }
 });
 

@@ -95,7 +95,7 @@ app.post('/login', (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const website = urlDatabase[req.params.shortURL].longURL;
-  res.send(website);
+  res.redirect(website);
 });
 
 app.get("/urls/:shortURL", (req, res) => {

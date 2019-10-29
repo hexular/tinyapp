@@ -36,7 +36,7 @@ const generateRandomString = () => {
   return result;
 };
 
-const duplicateLookup = (key, value, registry) => {
+const infoLookup = (key, value, registry) => {
   for (let user in registry) {
     if (registry[user][key] === value) return true;
   } 
@@ -50,12 +50,33 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {username: req.cookies["username"]});
+  res.render("urls_new", {username: req.cookies["user_id"]});
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase,  username: req.cookies["username"] };
+  let templateVars = { urls: urlDatabase,  username: req.cookies["user_id"] };
   res.render('urls_index', templateVars);
+});
+
+app.post('/login', (req, res) => {
+  // console.log(req.body.email, req.body.password)
+  if (!infoLookup('email', req.body.email, users)) {
+    res.status(400);
+    res.send("Email not found");
+  } else {
+    for (let user in users) {
+      // console.log(users[user].password)
+      if (users[user].password === req.body.password && users[user].email === req.body.email) {
+        console.log(user);
+        res.cookie('user_id', users[user].id);
+        res.redirect('/urls');
+      }
+      if (users[user].email === req.body.email && users[user].password !== req.body.password) {
+        res.status(400);
+        res.send("Wrong password");
+      }
+    }
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -64,7 +85,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["user_id"] };
   res.render("urls_show", templateVars);
 });
 
@@ -77,7 +98,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
@@ -89,42 +110,49 @@ app.post("/urls", (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  res.render('register', { username: req.cookies["username"] });
+  res.render('register', { username: users[req.cookies["user_id"]] });
 });
 
 app.post('/register', (req, res) => {
-  const newUser = generateRandomString();
+  let newID = generateRandomString();
   // console.log(req.body.email, newUser)
   if (req.body.email.length === 0 || req.body.password.length === 0) {
     res.status(400);
     res.send("Fields cannot be empty");
   }
-  if (duplicateLookup("email", req.body.email, users)) {
+  if (infoLookup("email", req.body.email, users)) {
     res.status(400);
     res.send("That email is already in use. Please use another email address.");
-  }
-  users[newUser] = {
-    id: newUser,
+  } else {
+
+  users[newID] = {
+    id: newID,
     email: req.body.email,
     password: req.body.password
   };
+
+  newUser = users[newID] ;
   console.log(users);
-  const cookie = res.cookie('username', newUser);
+  console.log(newUser.id);
+  // let cookieID = ;
+  
+  res.cookie('user_id', newUser.id);
+  // console.log(users[newUser].id)
+  // console.log(users);
+  // console.log(req.cookies['user_id'])
   res.redirect('/urls');
+ }
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { username: req.cookies["user_id"], urls: urlDatabase };
   delete urlDatabase[req.params.shortURL];
   // console.log(urlDatabase);
   res.render('urls_index', templateVars);
 });
 
-app.post('/login', (req, res) => {
-  const cookie = res.cookie('username', req.body.username);
-  // console.log(cookie.body);
-  // console.log(req.body.username);
-  res.redirect('/urls');
+app.get('/login', (req, res) => {
+  res.render('login', { username: users[req.cookies["user_id"]] });
 });
 
 app.post('/:id', (req, res) => {

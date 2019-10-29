@@ -92,14 +92,14 @@ app.post('/login', (req, res) => {
   }
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  const website = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(website);
-});
-
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
-  res.render("urls_show", templateVars);
+  let username = req.session.user_id
+  if (username !== urlDatabase[req.params.shortURL].userID) {
+    res.redirect('/urls');
+  } else {
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
+    res.render("urls_show", templateVars);
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -168,11 +168,9 @@ app.get('/login', (req, res) => {
   res.render('login', { username: users[req.session.user_id] });
 });
 
-
-
 app.post('/:id', (req, res) => {
   let username = req.session.user_id
-  if (username === undefined) {
+  if (username !== urlDatabase[req.params.id].userID) {
     res.status(400);
     res.send("Nice try hackermans")
   } else {

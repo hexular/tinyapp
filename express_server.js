@@ -164,8 +164,11 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+  if (req.session.user_id !== undefined) res.redirect('/urls');
   res.render('login', { username: users[req.session.user_id] });
 });
+
+
 
 app.post('/:id', (req, res) => {
   let username = req.session.user_id

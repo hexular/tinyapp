@@ -71,8 +71,8 @@ app.get('/urls', (req, res) => {
   list.forEach((url) => {
     result[url] = urlDatabase[url];
   });
-  if (result === {}) 
-  let templateVars = { urls: result,  username: req.cookies["user_id"] };
+  console.log(result);
+  let templateVars = { result, urls: result,  username: req.cookies["user_id"] };
   res.render('urls_index', templateVars);
 });
 

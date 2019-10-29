@@ -43,7 +43,6 @@ const infoLookup = (key, value, registry) => {
   return false;
 };
 
-// console.log(emailLookup("email", 'user2@example.com', users));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -59,20 +58,18 @@ app.get('/urls', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  // console.log(req.body.email, req.body.password)
   if (!infoLookup('email', req.body.email, users)) {
-    res.status(400);
+    res.status(403);
     res.send("Email not found");
   } else {
     for (let user in users) {
-      // console.log(users[user].password)
       if (users[user].password === req.body.password && users[user].email === req.body.email) {
         console.log(user);
         res.cookie('user_id', users[user].id);
         res.redirect('/urls');
       }
       if (users[user].email === req.body.email && users[user].password !== req.body.password) {
-        res.status(400);
+        res.status(403);
         res.send("Wrong password");
       }
     }
@@ -113,9 +110,11 @@ app.get('/register', (req, res) => {
   res.render('register', { username: users[req.cookies["user_id"]] });
 });
 
+
+
 app.post('/register', (req, res) => {
   let newID = generateRandomString();
-  // console.log(req.body.email, newUser)
+
   if (req.body.email.length === 0 || req.body.password.length === 0) {
     res.status(400);
     res.send("Fields cannot be empty");
@@ -125,29 +124,23 @@ app.post('/register', (req, res) => {
     res.send("That email is already in use. Please use another email address.");
   } else {
 
-  users[newID] = {
-    id: newID,
-    email: req.body.email,
-    password: req.body.password
-  };
+    users[newID] = {
+      id: newID,
+      email: req.body.email,
+      password: req.body.password
+    };
 
-  newUser = users[newID] ;
-  console.log(users);
-  console.log(newUser.id);
-  // let cookieID = ;
-  
-  res.cookie('user_id', newUser.id);
-  // console.log(users[newUser].id)
-  // console.log(users);
-  // console.log(req.cookies['user_id'])
-  res.redirect('/urls');
+    newUser = users[newID] ;
+    res.cookie('user_id', newUser.id);
+    res.redirect('/urls');
  }
 });
+
+
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   let templateVars = { username: req.cookies["user_id"], urls: urlDatabase };
   delete urlDatabase[req.params.shortURL];
-  // console.log(urlDatabase);
   res.render('urls_index', templateVars);
 });
 

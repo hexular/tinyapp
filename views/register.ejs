@@ -15,12 +15,24 @@
     <% include partials/_header %>
 
     <main style="margin: 1em;">
-      <h1>Register</h1>
+      <div>
+      <h2>Create Account</h1>
       <form action="/register" method="POST">
-        <input type="email" name="email">
-        <input type="password" name="password">
-        <button class="btn btn-primary">Submit</button>
+        <div>
+          <br>
+          <h5>Email address</h5>
+          <input type="email" name="email" placeholder="Enter email">
+          <br>
+          <br>
+          <h5>Password</h5>
+        </div>
+        <div>
+          <input type="password" name="password" placeholder="Password">
+        </div>
+        <br>
+        <button class="btn btn-primary">Register</button>
       </form>
+    </div>
     </main>
       <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

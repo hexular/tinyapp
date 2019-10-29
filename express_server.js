@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -81,11 +82,11 @@ app.post('/login', (req, res) => {
     res.send("Email not found");
   } else {
     for (let user in users) {
-      if (users[user].password === req.body.password && users[user].email === req.body.email) {
+      if (bcrypt.compareSync(req.body.password, users[user].password) && users[user].email === req.body.email) {
         res.cookie('user_id', users[user].id);
         res.redirect('/urls');
       }
-      if (users[user].email === req.body.email && users[user].password !== req.body.password) {
+      if (users[user].email === req.body.email && !bcrypt.compareSync(req.body.password, users[user].password)) {
         res.status(403);
         res.send("Wrong password");
       }
@@ -125,8 +126,6 @@ app.get('/register', (req, res) => {
   res.render('register', { username: users[req.cookies["user_id"]] });
 });
 
-
-
 app.post('/register', (req, res) => {
   let newID = generateRandomString();
 
@@ -142,11 +141,12 @@ app.post('/register', (req, res) => {
     users[newID] = {
       id: newID,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync(req.body.password, 10)
     };
 
     newUser = users[newID] ;
     res.cookie('user_id', newUser.id);
+    console.log(users);
     res.redirect('/urls');
  }
 });

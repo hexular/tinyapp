@@ -76,7 +76,7 @@ app.get('/urls', (req, res) => {
 app.post('/login', (req, res) => {
   if (!infoLookup('email', req.body.email, users)) {
     res.status(403);
-    res.send("Email not found");
+    res.send("Email not found\n");
   } else {
     for (let user in users) {
       if (users[user].email === req.body.email) {
@@ -85,7 +85,7 @@ app.post('/login', (req, res) => {
           res.redirect('/urls');
         } else {
           res.status(403);
-          res.send("Wrong password");
+          res.send("Wrong password\n");
         }
       }
     }
@@ -103,12 +103,12 @@ app.get("/urls/:shortURL", (req, res) => {
 
   // TODO: Make a template for error pages
 
-  if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist');
+  if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist\n');
   else {
     let username = req.session.user_id
-    if (username === undefined) res.send('Please log in to view and edit your URLs');
+    if (username === undefined) res.send('Please log in to view and edit your URLs\n');
     if (username !== urlDatabase[req.params.shortURL].userID) {
-      res.send('This URL belongs to another user');
+      res.send('This URL belongs to another user\n');
     } else {
       let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
       res.render("urls_show", templateVars);
@@ -126,6 +126,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  if (req.session.user_id === undefined) res.send('Please log in to create URLs\n');
   let newURL = generateRandomString();
   if (urlDatabase[newURL]) newURL = generateRandomString();
   urlDatabase[newURL] = {};
@@ -143,11 +144,11 @@ app.post('/register', (req, res) => {
 
   if (req.body.email.length === 0 || req.body.password.length === 0) {
     res.status(400);
-    res.send("Fields cannot be empty");
+    res.send("Fields cannot be empty\n");
   }
   if (infoLookup("email", req.body.email, users)) {
     res.status(400);
-    res.send("That email is already in use. Please use another email address.");
+    res.send("That email is already in use. Please use another email address.\n");
   } else {
 
     users[newID] = {

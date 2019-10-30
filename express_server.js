@@ -13,11 +13,13 @@ app.use(cookieSession({
 }));
 app.set("view engine", "ejs");
 
+// sample entires in the url database
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
   "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID" }
 };
 
+// sample users in the user database
 const users = {
   "userRandomID": {
     id: "userRandomID",

@@ -62,8 +62,14 @@ app.get("/urls/new", (req, res) => {
 
 app.get('/urls', (req, res) => {
   let userEmail;
-  console.log(users[req.session.user_id])
-  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
+  if (users[req.session.user_id] !== undefined) {
+    userEmail = users[req.session.user_id].email;
+  } else {
+    userEmail = undefined;
+  }
+
+  // console.log(users[req.session.user_id], req.session.user_id)
+  
   let result = urlsForUser(req.session.user_id);
   let templateVars = { result: urlsForUser(req.session.user_id), urls: result,  username: req.session.user_id, email: userEmail };
   res.render('urls_index', templateVars);
@@ -94,7 +100,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   let userEmail;
-  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
+  if (users[req.session.user_id] !== undefined) {
+    userEmail = users[req.session.user_id].email;
+  } else {
+    userEmail = undefined;
+  }
   if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist\n');
   else {
     let username = req.session.user_id
@@ -159,7 +169,11 @@ app.get('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   let userEmail;
-  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
+  if (users[req.session.user_id] !== undefined) {
+    userEmail = users[req.session.user_id].email;
+  } else {
+    userEmail = undefined;
+  }
   let templateVars = { username: req.session.user_id, urls: urlDatabase, result: urlsForUser(req.session.user_id), email: userEmail };
   if (templateVars.username === undefined) {
     res.status(403);
@@ -167,6 +181,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   } else {
     delete urlDatabase[req.params.shortURL];
     Object.keys(urlDatabase).length === 0 ? res.redirect('/urls') : res.render('urls_index', templateVars);
+    // TODO: FIX DELETION BUG SHOWING OTHER USER URLS CHECK FOR USER ID, NOT LENGTH
   }
 });
 

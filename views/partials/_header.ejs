@@ -12,6 +12,7 @@
       </div>
       <div class="navbar-nav float-right">
           <% if (username) { %> 
+          <a class="nav-item nav-link" href="/urls"><%= email %></a>
           <a class="nav-item nav-link" href="/logout">Logout</a> <% } else { %>
           <a class="nav-item nav-link" href="/login">Login</a>
           <a class="nav-item nav-link" href="/register">Register</a>

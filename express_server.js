@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { infoLookup } = require('./helpers');
+const { infoLookup, generateRandomString } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -32,15 +32,6 @@ const users = {
   }
 };
 
-const generateRandomString = () => {
-  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += chars[(Math.floor(Math.random() * chars.length))];
-  }
-  return result;
-};
-
 const urlsForUser = (id) => {
   let urlList = [];
   for (let url in urlDatabase) {
@@ -63,13 +54,18 @@ app.get("/urls/new", (req, res) => {
   if (req.session.user_id === undefined) {
     res.redirect('/login');
   } else {
-    res.render("urls_new", {username: req.session.user_id});
+    let userEmail;
+    req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
+    res.render("urls_new", {username: req.session.user_id, email: userEmail});
   }
 });
 
 app.get('/urls', (req, res) => {
+  let userEmail;
+  console.log(users[req.session.user_id])
+  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
   let result = urlsForUser(req.session.user_id);
-  let templateVars = { result: urlsForUser(req.session.user_id), urls: result,  username: req.session.user_id };
+  let templateVars = { result: urlsForUser(req.session.user_id), urls: result,  username: req.session.user_id, email: userEmail };
   res.render('urls_index', templateVars);
 });
 
@@ -91,18 +87,14 @@ app.post('/login', (req, res) => {
     }
   }
 });
-
 app.get("/u/:shortURL", (req, res) => {
   const website = urlDatabase[req.params.shortURL].longURL;
   res.redirect(website);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  // console.log(req.params.shortURL);
-  // console.log(urlDatabase[req.params.shortURL])
-
-  // TODO: Make a template for error pages
-
+  let userEmail;
+  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
   if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist\n');
   else {
     let username = req.session.user_id
@@ -110,7 +102,7 @@ app.get("/urls/:shortURL", (req, res) => {
     if (username !== urlDatabase[req.params.shortURL].userID) {
       res.send('This URL belongs to another user\n');
     } else {
-      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
+      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail };
       res.render("urls_show", templateVars);
     }
   }
@@ -136,12 +128,12 @@ app.post("/urls", (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  if (req.session.user_id !== undefined) res.redirect('/urls');
   res.render('register', { username: users[req.session.user_id] });
 });
 
 app.post('/register', (req, res) => {
   let newID = generateRandomString();
-
   if (req.body.email.length === 0 || req.body.password.length === 0) {
     res.status(400);
     res.send("Fields cannot be empty\n");
@@ -150,17 +142,15 @@ app.post('/register', (req, res) => {
     res.status(400);
     res.send("That email is already in use. Please use another email address.\n");
   } else {
-
     users[newID] = {
       id: newID,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-
     newUser = users[newID] ;
     req.session.user_id = newUser.id;
     res.redirect('/urls');
- }
+  }
 });
 
 app.get('/urls/:shortURL/delete', (req, res) => {
@@ -168,7 +158,9 @@ app.get('/urls/:shortURL/delete', (req, res) => {
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
-  let templateVars = { username: req.session.user_id, urls: urlDatabase, result: urlsForUser(req.session.user_id) };
+  let userEmail;
+  req.session.user_id === undefined ? userEmail = undefined : userEmail = users[req.session.user_id].email;
+  let templateVars = { username: req.session.user_id, urls: urlDatabase, result: urlsForUser(req.session.user_id), email: userEmail };
   if (templateVars.username === undefined) {
     res.status(403);
     res.send("I'm afraid I can't let you do that");
@@ -185,9 +177,10 @@ app.get('/login', (req, res) => {
 
 app.post('/urls/:id', (req, res) => {
   let username = req.session.user_id
+  if (username === undefined) res.send('Please log in to view and edit your URLs\n')
   if (username !== urlDatabase[req.params.id].userID) {
     res.status(400);
-    res.send("Nice try hackermans")
+    res.send("Nice try hackermans\n")
   } else {
     urlDatabase[req.params.id].longURL = req.body.name;
     res.redirect(`/urls`);

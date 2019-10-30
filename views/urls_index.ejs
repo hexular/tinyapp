@@ -14,7 +14,10 @@
     <% if (Object.keys(result).length === 0 && username === undefined) { %>
       <p>Please <a href="/login">log in</a> to create and view URLs</p>
     <% } else if (Object.keys(result).length === 0 && username !== undefined) { %>
-      <p>You currently have no URLs! Start by <a href="/urls/new">creating</a> a new URL</p>
+      <p>You currently have no URLs! Start by creating a new URL</p>
+      <form action="/urls/new" method="GET">
+        <button class="btn btn-primary">Add URL</button>
+      </form>
     <% } else { %>
       <h3>My URLs</h3>
       <table class="table">
@@ -29,8 +32,8 @@
         <tbody>
           <% for(let url in urls) { %>
             <tr>
-              <td><%= url %></td>
-              <td><%= urls[url].longURL %></td>
+              <td><a href="<%= urls[url].longURL %>"><%= url %></a></td>
+              <td><a href="<%= urls[url].longURL %>"><%= urls[url].longURL %></a></td>
               <td><form method="GET" action="/urls/<%= url %>">
                 <button class="btn btn-outline-secondary">Edit</button>
               </form></td>
@@ -41,7 +44,13 @@
           <% } %>
         </tbody>
       </table>
-    <% } %>
+      <form action="/urls/new" method="GET">
+        <button class="btn btn-primary">Add URL</button>
+      </form>
+      <% } %>
+
+     
+
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

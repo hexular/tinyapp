@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
@@ -18,19 +18,21 @@ const urlDatabase = {
   "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID" }
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
 
+
+// finds a user's created URLs out of the URL database given a user's id and returns an object with those URLs
 const urlsForUser = (id) => {
   let urlList = [];
   for (let url in urlDatabase) {
@@ -49,8 +51,9 @@ app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
+
 app.get("/urls/new", (req, res) => {
-  if (req.session.user_id === undefined || users[req.session.user_id] === undefined) { 
+  if (req.session.user_id === undefined || users[req.session.user_id] === undefined) {
     req.session = null;
     res.redirect('/login');
   } else {
@@ -91,6 +94,7 @@ app.post('/login', (req, res) => {
     }
   }
 });
+
 app.get("/u/:shortURL", (req, res) => {
   const website = urlDatabase[req.params.shortURL].longURL;
   res.redirect(website);
@@ -105,7 +109,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
   if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist\n');
   else {
-    let username = req.session.user_id
+    let username = req.session.user_id;
     if (username === undefined) res.send('Please log in to view and edit your URLs\n');
     if (username !== urlDatabase[req.params.shortURL].userID) {
       res.send('This URL belongs to another user\n');
@@ -155,7 +159,7 @@ app.post('/register', (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-    newUser = users[newID] ;
+    let newUser = users[newID];
     req.session.user_id = newUser.id;
     res.redirect('/urls');
   }
@@ -188,18 +192,17 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/urls/:id', (req, res) => {
-  let username = req.session.user_id
-  if (username === undefined) res.send('Please log in to view and edit your URLs\n')
+  let username = req.session.user_id;
+  if (username === undefined) res.send('Please log in to view and edit your URLs\n');
   if (username !== urlDatabase[req.params.id].userID) {
     res.status(400);
-    res.send("Nice try hackermans\n")
+    res.send("Nice try hackermans\n");
   } else {
     urlDatabase[req.params.id].longURL = req.body.name;
     res.redirect(`/urls`);
   }
 });
 
-
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Tiny app listening on port ${PORT}!`);
 });

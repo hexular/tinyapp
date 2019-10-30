@@ -98,12 +98,21 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let username = req.session.user_id
-  if (username !== urlDatabase[req.params.shortURL].userID) {
-    res.redirect('/urls');
-  } else {
-    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
-    res.render("urls_show", templateVars);
+  // console.log(req.params.shortURL);
+  // console.log(urlDatabase[req.params.shortURL])
+
+  // TODO: Make a template for error pages
+
+  if (urlDatabase[req.params.shortURL] === undefined) res.send('This URL Does not exist');
+  else {
+    let username = req.session.user_id
+    if (username === undefined) res.send('Please log in to view and edit your URLs');
+    if (username !== urlDatabase[req.params.shortURL].userID) {
+      res.send('This URL belongs to another user');
+    } else {
+      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id };
+      res.render("urls_show", templateVars);
+    }
   }
 });
 
@@ -173,7 +182,7 @@ app.get('/login', (req, res) => {
   res.render('login', { username: users[req.session.user_id] });
 });
 
-app.post('/:id', (req, res) => {
+app.post('/urls/:id', (req, res) => {
   let username = req.session.user_id
   if (username !== urlDatabase[req.params.id].userID) {
     res.status(400);

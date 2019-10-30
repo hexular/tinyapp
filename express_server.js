@@ -68,8 +68,6 @@ app.get('/urls', (req, res) => {
     userEmail = undefined;
   }
 
-  // console.log(users[req.session.user_id], req.session.user_id)
-  
   let result = urlsForUser(req.session.user_id);
   let templateVars = { result: urlsForUser(req.session.user_id), urls: result,  username: req.session.user_id, email: userEmail };
   res.render('urls_index', templateVars);
@@ -180,8 +178,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
     res.send("I'm afraid I can't let you do that");
   } else {
     delete urlDatabase[req.params.shortURL];
-    Object.keys(urlDatabase).length === 0 ? res.redirect('/urls') : res.render('urls_index', templateVars);
-    // TODO: FIX DELETION BUG SHOWING OTHER USER URLS CHECK FOR USER ID, NOT LENGTH
+    Object.keys(urlsForUser(req.session.user_id)).length === 0 ? res.redirect('/urls') : res.redirect('/urls');
   }
 });
 

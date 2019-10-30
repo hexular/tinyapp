@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { infoLookup, generateRandomString, urlsForUser } = require('./helpers');
+const { infoLookup, generateRandomString } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -12,7 +12,6 @@ app.use(cookieSession({
   keys: ['user_id']
 }));
 app.set("view engine", "ejs");
-
 
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
@@ -32,8 +31,22 @@ const users = {
   }
 };
 
+const urlsForUser = (id) => {
+  let urlList = [];
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      urlList.push(url);
+    }
+  }
+  let result = {};
+  urlList.forEach((url) => {
+    result[url] = urlDatabase[url];
+  });
+  return result;
+};
+
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {

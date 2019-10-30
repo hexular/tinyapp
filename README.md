@@ -4,9 +4,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
+!["URL Index Page"](https://github.com/hexular/tinyapp/blob/master/docs/urls-index.png?raw=true)
 !["Create URL Page"](https://github.com/hexular/tinyapp/blob/master/docs/create-url.png?raw=true)
 !["Edit URL Page"](https://github.com/hexular/tinyapp/blob/master/docs/edit-url.png?raw=true)
-!["URL Index Page"](https://github.com/hexular/tinyapp/blob/master/docs/urls-index.png?raw=true)
 
 ## Dependencies
 

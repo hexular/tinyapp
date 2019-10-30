@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { infoLookup, generateRandomString } = require('./helpers');
+const { infoLookup, generateRandomString, urlsForUser } = require('./helpers');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -32,26 +32,13 @@ const users = {
   }
 };
 
-const urlsForUser = (id) => {
-  let urlList = [];
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      urlList.push(url);
-    }
-  }
-  let result = {};
-  urlList.forEach((url) => {
-    result[url] = urlDatabase[url];
-  });
-  return result;
-};
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
 app.get("/urls/new", (req, res) => {
-  if (req.session.user_id === undefined) {
+  if (req.session.user_id === undefined || users[req.session.user_id] === undefined) { 
+    req.session = null;
     res.redirect('/login');
   } else {
     let userEmail;

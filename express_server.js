@@ -118,13 +118,11 @@ app.get("/u/:shortURL", (req, res) => {
   } else {
     req.session.visitor = req.session.user_id;
     if (!thisLink.idsVisited.includes(req.session.user_id)) {
-      // if the user didn't click the link yet, then increment the counter
       thisLink.uniqueVists++;
       thisLink.idsVisited.push(req.session.user_id);
     }
   }
   const website = thisLink.longURL;
-  // console.log(thisLink.counter, thisLink)
   thisLink.counter += 1;
   thisLink.visitTime.push(new Date());
   thisLink.visitPerson.push(req.session.visitor);

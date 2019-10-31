@@ -196,7 +196,7 @@ app.get('/urls/:shortURL/delete', (req, res) => {
 // the first half of the function ensures against server restart login state errors
 // the rest of the function ensures that only the owner of the URL can delete that URL
 // once a URL is deleted, the user is redirected to the index page
-app.post('/urls/:shortURL/delete', (req, res) => {
+app.delete('/urls/:shortURL/delete', (req, res) => {
   if (users[req.session.user_id] !== undefined) {
     userEmail = users[req.session.user_id].email;
   } else {

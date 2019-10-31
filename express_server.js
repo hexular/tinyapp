@@ -19,8 +19,8 @@ app.set("view engine", "ejs");
 
 // sample entires in the url database
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [] },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [] }
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [] },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [] }
 };
 
 // sample users in the user database
@@ -110,21 +110,24 @@ app.post('/login', (req, res) => {
 
 // this get listener is responsible for redirecting to a shortURL's associated longURL
 app.get("/u/:shortURL", (req, res) => {
+  let thisLink = urlDatabase[req.params.shortURL];
   if (req.session.user_id === undefined) {
     req.session.visitor = generateRandomString();
-    urlDatabase[req.params.shortURL].uniqueVists++;
-    urlDatabase[req.params.shortURL].idsVisited.push(req.session.visitor);
+    thisLink.uniqueVists++;
+    thisLink.idsVisited.push(req.session.visitor);
   } else {
     req.session.visitor = req.session.user_id;
-    if (!urlDatabase[req.params.shortURL].idsVisited.includes(req.session.user_id)) {
+    if (!thisLink.idsVisited.includes(req.session.user_id)) {
       // if the user didn't click the link yet, then increment the counter
-      urlDatabase[req.params.shortURL].uniqueVists++;
-      urlDatabase[req.params.shortURL].idsVisited.push(req.session.user_id);
+      thisLink.uniqueVists++;
+      thisLink.idsVisited.push(req.session.user_id);
     }
   }
-  const website = urlDatabase[req.params.shortURL].longURL;
-  // console.log(urlDatabase[req.params.shortURL].counter, urlDatabase[req.params.shortURL])
-  urlDatabase[req.params.shortURL].counter += 1;
+  const website = thisLink.longURL;
+  // console.log(thisLink.counter, thisLink)
+  thisLink.counter += 1;
+  thisLink.visitTime.push(new Date());
+  thisLink.visitPerson.push(req.session.visitor);
   res.redirect(website);
 });
 
@@ -144,7 +147,7 @@ app.get("/urls/:shortURL", (req, res) => {
     if (username !== urlDatabase[req.params.shortURL].userID) {
       res.send('This URL belongs to another user\n');
     } else {
-      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail, counter: urlDatabase[req.params.shortURL].counter, unique: urlDatabase[req.params.shortURL].uniqueVists };
+      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail, counter: urlDatabase[req.params.shortURL].counter, unique: urlDatabase[req.params.shortURL].uniqueVists, visitTime: urlDatabase[req.params.shortURL].visitTime, visitPerson: urlDatabase[req.params.shortURL].visitPerson };
       res.render("urls_show", templateVars);
     }
   }

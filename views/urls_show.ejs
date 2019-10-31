@@ -15,6 +15,9 @@
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"> /u/<%= shortURL %></a></p>
         <p class="card-text">Link Hits: <%= counter %></p>
         <p class="card-text">Unique Hits: <%= unique %></p>
+        <% for (let i = 0; i < visitTime.length; i++) { %>
+          <p class="card-text">Visited on <%= visitTime[i] %> by <%= visitPerson[i] %></p>
+        <% } %>
       </div>
       <div class="card-footer text-muted">
         <h1>Edit</h1>

@@ -19,8 +19,8 @@ app.set("view engine", "ejs");
 
 // sample entires in the url database
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [] },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [] }
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [], created: new Date() },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID", counter: 0, uniqueVists: 0, idsVisited: [], visitTime: [], visitPerson: [], created: new Date() }
 };
 
 // sample users in the user database
@@ -147,7 +147,7 @@ app.get("/urls/:shortURL", (req, res) => {
     if (username !== urlDatabase[req.params.shortURL].userID) {
       res.send('This URL belongs to another user\n');
     } else {
-      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail, counter: urlDatabase[req.params.shortURL].counter, unique: urlDatabase[req.params.shortURL].uniqueVists, visitTime: urlDatabase[req.params.shortURL].visitTime, visitPerson: urlDatabase[req.params.shortURL].visitPerson };
+      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail, counter: urlDatabase[req.params.shortURL].counter, unique: urlDatabase[req.params.shortURL].uniqueVists, visitTime: urlDatabase[req.params.shortURL].visitTime, visitPerson: urlDatabase[req.params.shortURL].visitPerson, created: urlDatabase[req.params.shortURL].created };
       res.render("urls_show", templateVars);
     }
   }
@@ -178,7 +178,8 @@ app.post("/urls", (req, res) => {
     uniqueVists: 0,
     visitTime: [],
     visitPerson: [],
-    idsVisited: []
+    idsVisited: [],
+    created: new Date()
   };
 });
 

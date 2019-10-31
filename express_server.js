@@ -167,13 +167,19 @@ app.get('/logout', (req, res) => {
 // this function checks if the user is logged in, and if they are, generates a new short URL using the generateRandomString helper function
 // it then adds the URL to the database and redirects back to the index page
 app.post("/urls", (req, res) => {
-  if (req.session.user_id === undefined) res.send('Please log in to create URLs\n');
   let newURL = generateRandomString();
-  if (urlDatabase[newURL]) newURL = generateRandomString();
-  urlDatabase[newURL] = {};
-  urlDatabase[newURL].longURL = 'http://' + req.body.longURL;
-  urlDatabase[newURL].userID = req.session.user_id;
   res.redirect(`/urls/${newURL}`);
+  if (req.session.user_id === undefined) res.send('Please log in to create URLs\n');
+  if (urlDatabase[newURL]) newURL = generateRandomString();
+  urlDatabase[newURL] = {
+    longURL: 'http://' + req.body.longURL,
+    userID: req.session.user_id,
+    counter: 0,
+    uniqueVists: 0,
+    visitTime: [],
+    visitPerson: [],
+    idsVisited: []
+  };
 });
 
 // checks if the user is logged in, if they are, sends them back to the index page

@@ -1,4 +1,5 @@
 const express = require("express");
+const methodOverride = require('method-override')
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
@@ -6,6 +7,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const { infoLookup, generateRandomString } = require('./helpers');
 
+app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',

@@ -26,4 +26,3 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 - Click counters will be added for each link
 - A date will be added for every link's creation time
-- UI Updates for nicer navigation

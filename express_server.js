@@ -17,8 +17,8 @@ app.set("view engine", "ejs");
 
 // sample entires in the url database
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID" }
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID", counter: 0 },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "userRandomID", counter: 0 }
 };
 
 // sample users in the user database
@@ -109,6 +109,8 @@ app.post('/login', (req, res) => {
 // this get listener is responsible for redirecting to a shortURL's associated longURL
 app.get("/u/:shortURL", (req, res) => {
   const website = urlDatabase[req.params.shortURL].longURL;
+  console.log(urlDatabase[req.params.shortURL].counter, urlDatabase[req.params.shortURL])
+  urlDatabase[req.params.shortURL].counter += 1;
   res.redirect(website);
 });
 
@@ -128,7 +130,7 @@ app.get("/urls/:shortURL", (req, res) => {
     if (username !== urlDatabase[req.params.shortURL].userID) {
       res.send('This URL belongs to another user\n');
     } else {
-      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail };
+      let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.session.user_id, email: userEmail, counter: urlDatabase[req.params.shortURL].counter };
       res.render("urls_show", templateVars);
     }
   }

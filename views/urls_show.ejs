@@ -12,7 +12,8 @@
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">TinyURL for: <%= longURL.longURL %></h5>
-        <p class="card-text">Short URL: <a href="<%= longURL.longURL %>"> localhost:8080/u/<%= shortURL %></a></p>
+        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"> /u/<%= shortURL %></a></p>
+        <p class="card-text">Link Hits: <%= counter %></p>
       </div>
       <div class="card-footer text-muted">
         <h1>Edit</h1>

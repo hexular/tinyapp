@@ -203,6 +203,7 @@ app.delete('/urls/:shortURL/delete', (req, res) => {
     userEmail = undefined;
   }
   let templateVars = { username: req.session.user_id, urls: urlDatabase, result: urlsForUser(req.session.user_id), email: userEmail };
+  if (!urlDatabase[req.params.shortURL]) res.redirect('/login');
   if (templateVars.username !== urlDatabase[req.params.shortURL].userID) {
     res.status(403);
     res.send("I'm afraid I can't let you do that");

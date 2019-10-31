@@ -7,7 +7,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const { infoLookup, generateRandomString } = require('./helpers');
 
-app.use(methodOverride('X-HTTP-Method-Override'));
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
@@ -221,7 +221,7 @@ app.get('/login', (req, res) => {
 
 // this function checks that only the owner of the URL can view and edit their short URL details
 // if the owner access the URL and updates it, the database is updated and they are redirected to the index page
-app.post('/urls/:id', (req, res) => {
+app.put('/urls/:id', (req, res) => {
   let username = req.session.user_id;
   if (username === undefined) res.send('Please log in to view and edit your URLs\n');
   if (username !== urlDatabase[req.params.id].userID) {

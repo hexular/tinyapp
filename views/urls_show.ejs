@@ -17,7 +17,7 @@
       <div class="card-footer text-muted">
         <h1>Edit</h1>
         <% let id = shortURL %>
-        <form action="/urls/<%= id %>" method="POST">
+        <form action="/urls/<%= id %>?_method=PUT" method="POST">
           New URL
           <br>
           <input name="name" placeholder="http://">
